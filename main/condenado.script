@@ -1,0 +1,75 @@
+local lives = 3
+local datos = require("main.datos")
+local sonido = true
+
+local function restore_player_input ()
+	if datos.game_over == false then
+		msg.post("/power_bar/power_bar#power_bar", "restore_input")
+	end
+end
+function init(self)
+	self.lives = lives
+end
+
+function final(self)
+	-- Add finalization code here
+	-- Remove this function if not needed
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Remove this function if not needed
+end
+
+function on_message(self, message_id, message, sender)
+	print(message_id)
+	print(sonido)
+	if message_id == hash("cutting_head") then
+		local power = message[1]
+		self.lives = self.lives - power
+		if self.lives <= 0 then 
+			if sonido == true then
+				sound.play("condenado#hacha", {gain = 0.8})
+			end
+			print("condenado muerto")
+			datos.cabeza_en_posicion = false
+			msg.post("/gui#gui", "update_score")
+			local dp = vmath.vector3(80, -50, 1)
+			go.animate("head", "position.y", go.PLAYBACK_ONCE_FORWARD, dp.y, go.EASING_LINEAR, 1.1, 0, 
+			function() 
+				go.set_position(vmath.vector3(82,55,1), "head") 
+				datos.cabeza_en_posicion = true
+				restore_player_input ()  end )
+			go.animate("head", "euler.z", go.PLAYBACK_ONCE_FORWARD, 45, go.EASING_LINEAR, 1, 0 , 
+			function() go.animate("head", "euler.z", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_LINEAR, 0)end)
+			self.lives = lives
+		else	
+			if sonido == true then
+				sound.play("condenado#hacha_2", {gain = 0.8})
+			end
+			print("el condenado sigue con vida")
+			restore_player_input ()
+		end
+	end
+	if message_id == hash("restart_game") then
+		self.lives = 3
+	end
+	if message_id == hash("toggle_sound") then
+		if sonido == true then
+			sonido = false
+		else 
+			sonido = true
+		end
+	end
+end
+
+
+function on_input(self, action_id, action)
+
+		
+end
+
+function on_reload(self)
+	-- Add reload-handling code here
+	-- Remove this function if not needed
+end
