@@ -120,14 +120,6 @@ function init(self)
 	self.axe_power = 0
 end
 
-
-function final(self)
-	-- Add finalization code here
-	-- Remove this function if not needed
-end
-
-
-
 function update(self, dt)
 	local p = go.get_position()
 	if self.moving == true and direction == "right" then
@@ -199,9 +191,4 @@ function on_input(self, action_id, action)
 		end
 	end
 
-end
-
-function on_reload(self)
-	-- Add reload-handling code here
-	-- Remove this function if not needed
 end
